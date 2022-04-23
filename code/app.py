@@ -1,7 +1,13 @@
+from urllib.request import Request
 from flask import Flask, render_template, request
 import spacy
 from spacy_langdetect import LanguageDetector
 from spacy.language import Language
+from classifier import SentimentClassifier
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+# only use the first time.
+# import nltk
+# nltk.download('vader_lexicon') ## Line needed to correct error https://github.com/nltk/nltk/issues/1296
 
 app = Flask(__name__)
 
@@ -30,7 +36,30 @@ def checkEntity(data):
 
     return all_entitys, doc._.language['language']
 
+def getSentiment(language, data):
+    if language == 'en':
+        ia = SentimentIntensityAnalyzer()
+        sentiment = ia.polarity_scores(data)['compound']
+        cla = ""
+        if sentiment >= 0.05:
+            cla = "alert-success"
+        elif sentiment <= -0.05:
+            cla = "alert-danger"
+        else:
+            cla = "alert-warning"
+    else:
+        cla = ""
+        if sentiment >= 0.6:
+            cla = "alert-success"
+        elif sentiment <= 0.4:
+            cla = "alert-danger"
+        else:
+            cla = "alert-warning"
+        ia = SentimentClassifier()
+        sentiment = ia.predict(data)
 
+    print(sentiment, cla)
+    return sentiment, cla
 
 @app.route("/")
 def home():
@@ -63,9 +92,10 @@ def procces_text():
             entity_kind = ""
 
         results = [dato for dato in entities if dato[0] == entity_kind]
-        print(entities)
     
-    return render_template("index.html", num_of_results=len(results), results=results)
+        compound, cla = getSentiment(language, request.form['rawtext'])
+
+    return render_template("index.html", num_of_results=len(results), results=results, sentiment=compound, cla=cla)
 
 if __name__ ==  '__main__':
     app.run(debug = True)

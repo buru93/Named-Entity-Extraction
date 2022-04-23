@@ -45,22 +45,34 @@
         </form>
     </div>
 
-    {% if results %}
+    {% if -1 <= sentiment <= 1 %}
     <div class="container">
-    	<div class="alert alert-success" role="alert">
-        <p class="alert-heading">Resultado</p>
-        <p>Número de registros: {{num_of_results}}</p>
-        <ul>{% for i in results %}
-            <li>Valor: {{i[1]}}, Categoria: {{i[0]}}</li>
-            {%endfor %}
-    	</ul>
-    	</div>
-    </div>
-    {% elif num_of_results == 0 %}
-    <div class="container">
-    	<div class="alert alert-danger" role="alert">
-        <p class="alert-heading">Para esa categoria no se encuentran resultados</p>
-    	</div>
+        <div class="row">
+            {% if results %}
+            <div class="col-6">
+                <div class="alert alert-success" role="alert">
+                    <p class="alert-heading">Resultado</p>
+                    <p>Número de registros: {{num_of_results}}</p>
+                    <ul>{% for i in results %}
+                        <li>Valor: {{i[1]}}, Categoria: {{i[0]}}</li>
+                        {%endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% elif num_of_results == 0 %}
+            <div class="col-6">
+                <div class="alert alert-danger" role="alert">
+                <p class="alert-heading">Para esa categoria no se encuentran entidades</p>
+                </div>
+            </div>
+            {% endif%}
+            <div class="col-6">
+                <div class="alert {{ cla }}" role="alert">
+                    <p class="alert-heading">Sentimiento</p>
+                    <p> El sentimiento de la frase escrita tiene un valor {{ sentiment }}</p>
+                </div>
+            </div>
+        </div>
     </div>
     {% else %}
     <div></div>
