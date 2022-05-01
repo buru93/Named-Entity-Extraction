@@ -49,14 +49,14 @@ def getSentiment(language, data):
             cla = "alert-warning"
     else:
         cla = ""
+        ia = SentimentClassifier()
+        sentiment = ia.predict(data)
         if sentiment >= 0.6:
             cla = "alert-success"
         elif sentiment <= 0.4:
             cla = "alert-danger"
         else:
             cla = "alert-warning"
-        ia = SentimentClassifier()
-        sentiment = ia.predict(data)
 
     print(sentiment, cla)
     return sentiment, cla
